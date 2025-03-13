@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Eligibility Prediction Result</h2>
+
+    <div
+        class="mb-8 p-6 rounded-lg {% if eligible %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %}">
+        <div class="flex items-center justify-center mb-4">
+            <div
+                class="rounded-full h-24 w-24 flex items-center justify-center {% if eligible %}bg-green-100 text-green-600{% else %}bg-red-100 text-red-600{% endif %}">
+                {% if eligible %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                {% endif %}
+            </div>
+        </div>
+
+        <h3
+            class="text-2xl font-bold text-center {% if eligible %}text-green-700{% else %}text-red-700{% endif %} mb-2">
+            {{ message }}
+        </h3>
+
+        {% if probability_message %}
+        <p class="text-center {% if eligible %}text-green-600{% else %}text-red-600{% endif %} font-medium">
+            {{ probability_message }}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">Vehicle Information</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="text-sm text-gray-600">Model:</div>
+                <div class="text-sm font-medium">{{ form_data.get('model', 'N/A') }}</div>
+
+                <div class="text-sm text-gray-600">Fuel Type:</div>
+                <div class="text-sm font-medium">{{ form_data.get('fuel_type', 'N/A') }}</div>
+
+                <div class="text-sm text-gray-600">Engine Type:</div>
+                <div class="text-sm font-medium">{{ form_data.get('engine_type', 'N/A') }}</div>
+
+                <div class="text-sm text-gray-600">Transmission:</div>
+                <div class="text-sm font-medium">{{ form_data.get('transmission_type', 'N/A') }}</div>
+
+                <div class="text-sm text-gray-600">Vehicle Age:</div>
+                <div class="text-sm font-medium">{{ form_data.get('vehicle_age', 'N/A') }} years</div>
+
+                <div class="text-sm text-gray-600">Displacement:</div>
+                <div class="text-sm font-medium">{{ form_data.get('displacement', 'N/A') }} cc</div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">Customer Information</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="text-sm text-gray-600">Customer Age:</div>
+                <div class="text-sm font-medium">{{ form_data.get('customer_age', 'N/A') }} years</div>
+
+                <div class="text-sm text-gray-600">Driving Experience:</div>
+                <div class="text-sm font-medium">{{ form_data.get('driving_experience', 'N/A') }} years</div>
+
+                <div class="text-sm text-gray-600">Credit Score:</div>
+                <div class="text-sm font-medium">{{ form_data.get('credit_score', 'N/A') }}</div>
+
+                <div class="text-sm text-gray-600">Annual Income:</div>
+                <div class="text-sm font-medium">${{ form_data.get('annual_income', 'N/A') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 text-center">
+        <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">Check Another
+            Prediction</a>
+    </div>
+</div>
+{% endblock %}

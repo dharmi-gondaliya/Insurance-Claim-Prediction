@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Vehicle Information Form</h2>
+
+    {% if not model_loaded %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+        <p class="font-bold">Model Not Loaded</p>
+        <p>The prediction model hasn't been trained yet. Please run the training script first to generate the model
+            file.</p>
+    </div>
+    {% endif %}
+
+<button id="autofillButton" type="button"
+    class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg> -->
+    Autofill Data
+</button>
+<br><br>
+    <form action="/predict" method="post" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-blue-50 p-4 rounded-md">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">Customer & Policy Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                    <label for="subscription_length" class="block text-sm font-medium text-gray-700">Subscription Length
+                        (years)</label>
+                    <input type="number" step="0.1" id="subscription_length" name="subscription_length" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 10.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicle_age" class="block text-sm font-medium text-gray-700">Vehicle Age (years)</label>
+                    <input type="number" step="0.1" id="vehicle_age" name="vehicle_age" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 2.0">
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_age" class="block text-sm font-medium text-gray-700">Customer Age</label>
+                    <input type="number" id="customer_age" name="customer_age" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 41">
+                </div>
+
+                <div class="form-group">
+                    <label for="region_code" class="block text-sm font-medium text-gray-700">Region Code</label>
+                    <input type="text" id="region_code" name="region_code" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. C8">
+                </div>
+
+                <div class="form-group">
+                    <label for="region_density" class="block text-sm font-medium text-gray-700">Region Density</label>
+                    <input type="number" id="region_density" name="region_density" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 8794">
+                </div>
+
+                <div class="form-group">
+                    <label for="segment" class="block text-sm font-medium text-gray-700">Segment</label>
+                    <input type="text" id="segment" name="segment" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. C2">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-green-50 p-4 rounded-md">
+            <h3 class="text-lg font-semibold text-green-800 mb-2">Vehicle Specifications</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                    <label for="model" class="block text-sm font-medium text-gray-700">Model</label>
+                    <input type="text" id="model" name="model" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. M4">
+                </div>
+
+                <div class="form-group">
+                    <label for="fuel_type" class="block text-sm font-medium text-gray-700">Fuel Type</label>
+                    <select id="fuel_type" name="fuel_type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">Select Fuel Type</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="CNG">CNG</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="max_torque" class="block text-sm font-medium text-gray-700">Max Torque</label>
+                    <input type="text" id="max_torque" name="max_torque" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 250Nm@2750rpm">
+                </div>
+
+                <div class="form-group">
+                    <label for="max_power" class="block text-sm font-medium text-gray-700">Max Power</label>
+                    <input type="text" id="max_power" name="max_power" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 113.45bhp@4000rpm">
+                </div>
+
+                <div class="form-group">
+                    <label for="engine_type" class="block text-sm font-medium text-gray-700">Engine Type</label>
+                    <input type="text" id="engine_type" name="engine_type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 1.5 L U2 CRDi">
+                </div>
+
+                <div class="form-group">
+                    <label for="displacement" class="block text-sm font-medium text-gray-700">Displacement (cc)</label>
+                    <input type="number" id="displacement" name="displacement" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 1493">
+                </div>
+
+                <div class="form-group">
+                    <label for="cylinder" class="block text-sm font-medium text-gray-700">Cylinders</label>
+                    <input type="number" id="cylinder" name="cylinder" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 4">
+                </div>
+
+                <div class="form-group">
+                    <label for="transmission_type" class="block text-sm font-medium text-gray-700">Transmission
+                        Type</label>
+                    <select id="transmission_type" name="transmission_type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">Select Transmission</option>
+                        <option value="Manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="steering_type" class="block text-sm font-medium text-gray-700">Steering Type</label>
+                    <select id="steering_type" name="steering_type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">Select Steering Type</option>
+                        <option value="Power">Power</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="rear_brakes_type" class="block text-sm font-medium text-gray-700">Rear Brakes
+                        Type</label>
+                    <select id="rear_brakes_type" name="rear_brakes_type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">Select Brakes Type</option>
+                        <option value="Drum">Drum</option>
+                        <option value="Disc">Disc</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-purple-50 p-4 rounded-md">
+            <h3 class="text-lg font-semibold text-purple-800 mb-2">Vehicle Dimensions & Performance</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="form-group">
+                    <label for="turning_radius" class="block text-sm font-medium text-gray-700">Turning Radius
+                        (m)</label>
+                    <input type="number" step="0.1" id="turning_radius" name="turning_radius" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 5.2">
+                </div>
+
+                <div class="form-group">
+                    <label for="length" class="block text-sm font-medium text-gray-700">Length (mm)</label>
+                    <input type="number" id="length" name="length" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 4300">
+                </div>
+
+                <div class="form-group">
+                    <label for="width" class="block text-sm font-medium text-gray-700">Width (mm)</label>
+                    <input type="number" id="width" name="width" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 1790">
+                </div>
+
+                <div class="form-group">
+                    <label for="gross_weight" class="block text-sm font-medium text-gray-700">Gross Weight (kg)</label>
+                    <input type="number" id="gross_weight" name="gross_weight" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 1720">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-yellow-50 p-4 rounded-md">
+            <h3 class="text-lg font-semibold text-yellow-800 mb-2">Safety Features</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                    <label for="airbags" class="block text-sm font-medium text-gray-700">Number of Airbags</label>
+                    <input type="number" id="airbags" name="airbags" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 6">
+                </div>
+
+                <div class="form-group">
+                    <label for="ncap_rating" class="block text-sm font-medium text-gray-700">NCAP Rating (0-5)</label>
+                    <input type="number" min="0" max="5" id="ncap_rating" name="ncap_rating" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="e.g. 3">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-4">
+                {% for feature in [
+                'is_esc', 'is_adjustable_steering', 'is_tpms', 'is_parking_sensors',
+                'is_parking_camera', 'is_front_fog_lights', 'is_rear_window_wiper',
+                'is_rear_window_washer', 'is_rear_window_defogger', 'is_brake_assist',
+                'is_power_door_locks', 'is_central_locking', 'is_power_steering',
+                'is_driver_seat_height_adjustable', 'is_day_night_rear_view_mirror',
+                'is_ecw', 'is_speed_alert'
+                ] %}
+                <div class="form-group">
+                    <label class="inline-flex items-center mt-3">
+                        <select name="{{ feature }}" id="{{ feature }}"
+                            class="form-select rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                        <span class="ml-2 text-sm text-gray-700">
+                            {{ feature.replace('is_', '').replace('_', ' ').title() }}
+                            <span class="tooltip">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline text-gray-500"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <span class="tooltiptext">
+                                    {{ {
+                                    'is_esc': 'Electronic Stability Control',
+                                    'is_tpms': 'Tire Pressure Monitoring System',
+                                    'is_ecw': 'Emergency Call Warning'
+                                    }.get(feature, feature.replace('is_', '').replace('_', ' ').title()) }}
+                                </span>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center mt-4">
+            <button type="submit"
+                class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Predict Eligibility
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set up auto-fill functionality
+        const autofillButton = document.getElementById('autofillButton');
+
+        // Handle autofill button click
+        autofillButton.addEventListener('click', function () {
+            fillFormWithRandomData();
+        });
+
+        // Auto-populate dropdowns with default selection
+        document.querySelector('#fuel_type').value = "Diesel";
+        document.querySelector('#transmission_type').value = "Automatic";
+        document.querySelector('#steering_type').value = "Power";
+        document.querySelector('#rear_brakes_type').value = "Disc";
+    });
+
+    // Function to generate random data
+    function getRandomData() {
+        const randomData = {
+            subscription_length: (Math.random() * 10).toFixed(1),
+            vehicle_age: (Math.random() * 5).toFixed(1),
+            customer_age: Math.floor(Math.random() * 60) + 18,
+            region_code: `C${Math.floor(Math.random() * 20)}`,
+            region_density: Math.floor(Math.random() * 100000),
+            segment: `C${Math.floor(Math.random() * 5)}`,
+            model: `M${Math.floor(Math.random() * 10)}`,
+            fuel_type: ["Petrol", "Diesel", "CNG"][Math.floor(Math.random() * 3)],
+            max_torque: `${Math.floor(Math.random() * 300)}Nm@${Math.floor(Math.random() * 5000)}rpm`,
+            max_power: `${(Math.random() * 150).toFixed(2)}bhp@${Math.floor(Math.random() * 6000)}rpm`,
+            engine_type: `${Math.floor(Math.random() * 2) + 1}.5 L Engine`,
+            displacement: Math.floor(Math.random() * 2000),
+            cylinder: Math.floor(Math.random() * 8) + 1,
+            transmission_type: ["Manual", "Automatic"][Math.floor(Math.random() * 2)],
+            steering_type: ["Power", "Electric"][Math.floor(Math.random() * 2)],
+            turning_radius: (Math.random() * 10).toFixed(1),
+            length: Math.floor(Math.random() * 5000),
+            width: Math.floor(Math.random() * 2000),
+            gross_weight: Math.floor(Math.random() * 3000),
+            airbags: Math.floor(Math.random() * 10),
+            ncap_rating: Math.floor(Math.random() * 6),
+            is_esc: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_adjustable_steering: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_tpms: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_parking_sensors: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_parking_camera: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_front_fog_lights: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_rear_window_wiper: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_rear_window_washer: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_rear_window_defogger: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_brake_assist: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_power_door_locks: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_central_locking: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_power_steering: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_driver_seat_height_adjustable: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_day_night_rear_view_mirror: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_ecw: ["Yes", "No"][Math.floor(Math.random() * 2)],
+            is_speed_alert: ["Yes", "No"][Math.floor(Math.random() * 2)]
+        };
+        return randomData;
+    }
+
+    // Function to fill the form with random data
+    function fillFormWithRandomData() {
+        const data = getRandomData();
+
+        // Loop through all the properties in the data object
+        for (const [key, value] of Object.entries(data)) {
+            const inputElement = document.getElementById(key);
+
+            if (inputElement) {
+                // Handle select elements differently
+                if (inputElement.tagName === 'SELECT') {
+                    inputElement.value = value;
+                } else {
+                    inputElement.value = value;
+                }
+            }
+        }
+
+        // Show a notification that form was filled
+        const form = document.querySelector('form');
+        const notification = document.createElement('div');
+        notification.className = 'bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4';
+        notification.innerHTML = '<p class="font-bold">Form Autofilled</p><p>The form has been populated with random data.</p>';
+
+        // Insert notification before form
+        form.parentNode.insertBefore(notification, form);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}
