@@ -10,8 +10,8 @@ app = Flask(__name__)
 # Load the model and preprocessor
 # Check if the model exists, otherwise provide instructions
 try:
-    model = joblib.load('insurance_eligibility_model.pkl')
-    preprocessor = joblib.load('insurance_preprocessor.pkl')
+    model = joblib.load('./model/insurance_eligibility_model.pkl')
+    preprocessor = joblib.load('./model/insurance_preprocessor.pkl')
     model_loaded = True
 except FileNotFoundError:
     model_loaded = False
